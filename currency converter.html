@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Akash Currency Converter</title>
+<style>
+body{background:#111;color:white;font-family:Arial;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}
+.card{background:#222;padding:30px;border-radius:20px;text-align:center;width:360px;box-shadow:0 0 25px #ffcc00}
+h2{color:#ffcc00}
+input,select{padding:12px;width:90%;border-radius:8px;border:none;margin:8px 0;font-size:16px;outline:none}
+button{padding:12px 20px;background:#ffcc00;color:#111;border:none;border-radius:8px;font-weight:bold;cursor:pointer;width:95%;margin-top:10px;font-size:16px}
+button:hover{background:#e6b800}
+.result{font-size:36px;font-weight:bold;color:#00ff88;margin-top:15px}
+.small{color:#aaa;font-size:13px;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>💱 Akash Dubai Converter</h2>
+<p>AED (Dubai) to INR (India)</p>
+<input id="amount" type="number" value="100" placeholder="Amount">
+<select id="from"><option value="AED">AED - Dirham</option><option value="INR">INR - Rupee</option><option value="USD">USD - Dollar</option></select>
+<select id="to"><option value="INR">INR - Rupee</option><option value="AED">AED - Dirham</option><option value="USD">USD - Dollar</option></select>
+<button onclick="convert()">Convert pannu da! 💰</button>
+<div id="output" class="result">Loading rate...</div>
+<div class="small">Live Exchange Rate API - Real Time!</div>
+</div>
+
+<script>
+let rates = {};
+async function loadRates(){
+let res = await fetch("https://open.er-api.com/v6/latest/AED");
+let data = await res.json();
+rates = data.rates;
+convert();
+}
+async function convert(){
+let amt = document.getElementById("amount").value;
+let from = document.getElementById("from").value;
+let to = document.getElementById("to").value;
+if(!rates[from] || !rates[to]){ await loadRates(); return; }
+// Convert via AED base
+let inAED = amt / rates[from] * 1; // Actually AED base? open.er-api base AED already
+// Logic: rates are AED->X . So AED->from = rates[from]. So from->AED = 1/rates[from]
+// To convert from->to: amt * (rates[to]/rates[from])
+let final = amt * (rates[to] / rates[from]);
+document.getElementById("output").innerHTML = `${amt} ${from} = <br>${final.toFixed(2)} ${to}`;
+}
+loadRates();
+</script>
+</body>
+</html>

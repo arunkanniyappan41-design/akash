@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Weather App - Akash</title>
+<style>
+body{background:#111;color:white;font-family:Arial;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}
+.card{background:#222;padding:30px;border-radius:20px;text-align:center;width:320px;box-shadow:0 0 20px #00ff88}
+input{padding:10px;width:200px;border-radius:8px;border:none;outline:none}
+button{padding:10px 15px;background:#00ff88;border:none;border-radius:8px;font-weight:bold;cursor:pointer;margin-left:5px}
+button:hover{background:#00cc6a}
+h2{margin:10px 0}
+.temp{font-size:50px;font-weight:bold;color:#00ff88}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>🌤️ Akash Weather App</h2>
+<input id="city" placeholder="City name - ex: Chennai">
+<button onclick="getWeather()">Search</button>
+<div id="result" style="margin-top:20px">
+<p>City type panni Search pannu da!</p>
+</div>
+</div>
+
+<script>
+async function getWeather(){
+let city = document.getElementById("city").value;
+if(!city){ alert("City name type pannu da!"); return; }
+document.getElementById("result").innerHTML = "Loading da... ⏳";
+
+// Step 1: City name to Lat/Long
+let geo = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=en&format=json`);
+let geoData = await geo.json();
+if(!geoData.results){ document.getElementById("result").innerHTML = "City kedaikala da! 😕"; return; }
+
+let lat = geoData.results[0].latitude;
+let lon = geoData.results[0].longitude;
+let name = geoData.results[0].name;
+let country = geoData.results[0].country;
+
+// Step 2: Get Weather
+let weather = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+let data = await weather.json();
+let temp = data.current_weather.temperature;
+let wind = data.current_weather.windspeed;
+
+document.getElementById("result").innerHTML = `
+<h2>${name}, ${country}</h2>
+<div class="temp">${temp}°C</div>
+<p>💨 Wind: ${wind} km/h</p>
+<p>🔥 SEMMA DA AKASH! WORKING!</p>
+`;
+}
+</script>
+</body>
+</html>
